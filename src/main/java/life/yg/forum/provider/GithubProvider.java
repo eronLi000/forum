@@ -6,9 +6,6 @@ import life.yg.forum.dto.GithubUser;
 import okhttp3.*;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.util.GregorianCalendar;
-
 /**
  * create by yigang on 2020/12/19
  */
@@ -45,13 +42,10 @@ public class GithubProvider {
         try {
             Response response = client.newCall(request).execute();
             String string = response.body().string();
-            System.out.println(string);
-            GithubUser githubUser = JSON.parseObject(string, GithubUser.class);
-            return githubUser;
-        } catch (IOException e) {
+            return JSON.parseObject(string, GithubUser.class);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
-
     }
 }
