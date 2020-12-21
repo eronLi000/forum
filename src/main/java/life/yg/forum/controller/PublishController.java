@@ -26,55 +26,51 @@ public class PublishController {
     private UserMapper userMapper;
 
     @GetMapping("/publish")
-    public String publish(){
+    public String publish() {
         return "publish";
     }
 
     @PostMapping("/publish")
-    public String doPublish(@RequestParam(value = "title",required = false) String title,
-                            @RequestParam(value = "description",required = false) String description,
-                            @RequestParam(value = "tag",required = false) String tag,
+    public String doPublish(@RequestParam(value = "title", required = false) String title,
+                            @RequestParam(value = "description", required = false) String description,
+                            @RequestParam(value = "tag", required = false) String tag,
                             HttpServletRequest request,
-                            Model model){
-        model.addAttribute("title",title);
-        model.addAttribute("description",description);
-        model.addAttribute("tag",tag);
+                            Model model) {
 
         //cookie check and user session check
         User user = null;
         Cookie[] cookies = request.getCookies();
-        if(cookies == null || cookies.length==0){
-            model.addAttribute("error", "user not log in");
-            return "publish";
-        }
-        for(Cookie cookie: cookies){
-            if(cookie.getName().equals("token")){
-                String token = cookie.getValue();
-                user= userMapper.findByToken(token);
-                if(user != null){
-                    request.getSession().setAttribute("user",user);
+        if (cookies != null && cookies.length != 0) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("token")) {
+                    String token = cookie.getValue();
+                    user = userMapper.findByToken(token);
+                    if (user != null) {
+                        request.getSession().setAttribute("user", user);
+                    }
+                    break;
                 }
-                break;
             }
         }
-
-        //login check
-        if(user == null){
+        if (user == null) {
             model.addAttribute("error", "user not log in");
-           return "publish";
+            return "publish";
         }
 
         //content check
-        if(title == null || title == ""){
-            model.addAttribute("error","title cant be empty");
+        model.addAttribute("title", title);
+        model.addAttribute("description", description);
+        model.addAttribute("tag", tag);
+        if (title == null || title == "") {
+            model.addAttribute("error", "title cant be empty");
             return "publish";
         }
-        if(description == null || description == ""){
-            model.addAttribute("error","description cant be empty");
+        if (description == null || description == "") {
+            model.addAttribute("error", "description cant be empty");
             return "publish";
         }
-        if(tag == null || tag == ""){
-            model.addAttribute("error","tag cant be empty");
+        if (tag == null || tag == "") {
+            model.addAttribute("error", "tag cant be empty");
             return "publish";
         }
 
