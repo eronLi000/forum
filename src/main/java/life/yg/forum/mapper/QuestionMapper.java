@@ -1,7 +1,6 @@
 package life.yg.forum.mapper;
 
 import life.yg.forum.model.Question;
-import life.yg.forum.model.User;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -19,6 +18,10 @@ public interface QuestionMapper {
             "values (#{title},#{description},#{gmtCreate},#{gmtModified},#{creator},#{tag})")
     void create(Question question);
 
-    @Select("select * from question")
-    List<Question> list();
+    @Select("select * from question limit #{offset}, #{size}")
+    List<Question> list(@Param(value = "offset") Integer offset, @Param(value = "size") Integer size);
+
+    @Select("select count(1) from question")
+    Integer count();
+
 }
