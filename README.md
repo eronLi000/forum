@@ -8,6 +8,6 @@
 [sample site](https://forums.imore.com/ask/?do=ask&subject=)
 ##tools
 [git](https://git-scm.com/download/linux)  
-[bootstrap](https://v3.bootcss.com/components/)
-[lombok](https://projectlombok.org/features/all)
+[bootstrap](https://v3.bootcss.com/components/)  
+[lombok](https://projectlombok.org/features/all)  
 [flyway](https://flywaydb.org/)
