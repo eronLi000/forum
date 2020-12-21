@@ -29,8 +29,8 @@ public class AuthorizeController {
     private String clientId;
     @Value("${github.client.secret}")
     private String clientSecret;
-    @Value("${github.redirect.url}")
-    private String redirectUrl;
+    @Value("${github.redirect.uri}")
+    private String redirectUri;
 
     @Autowired
     private UserMapper userMapper;
@@ -38,25 +38,23 @@ public class AuthorizeController {
     @GetMapping("/callback")
     public String callback(@RequestParam(name="code") String code,
                            @RequestParam(name="state") String state,
-                           HttpServletRequest request,
                            HttpServletResponse response){
         AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
         accessTokenDTO.setClient_id(clientId);
         accessTokenDTO.setClient_secret(clientSecret);
         accessTokenDTO.setCode(code);
-        accessTokenDTO.setRedirect_uri(redirectUrl);
+        accessTokenDTO.setRedirect_uri(redirectUri);
         accessTokenDTO.setState(state);
         String accessToken = githubProvider.getAccessToken(accessTokenDTO);
         GithubUser githubUser = githubProvider.getUser(accessToken);
-        if(githubUser != null){
+        if(githubUser != null && githubUser.getId() !=null){
             User user = new User();
             String token = UUID.randomUUID().toString();
             user.setToken(token);
             user.setName(githubUser.getName());
-            user.setBio(githubUser.getBio());
             user.setAccountId(String.valueOf(githubUser.getId()));
             user.setGmtCreate(System.currentTimeMillis());
-            user.setGmtModified(user.getGmtModified());
+            user.setGmtModified(user.getGmtCreate());
             userMapper.insert(user);
             //request.getSession().setAttribute("user",githubUser);
             //signed in successfully write cookies and session
