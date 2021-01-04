@@ -1,7 +1,6 @@
 package life.yg.forum.controller;
 
 import life.yg.forum.mapper.QuestionMapper;
-import life.yg.forum.mapper.UserMapper;
 import life.yg.forum.model.Question;
 import life.yg.forum.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -22,8 +20,6 @@ public class PublishController {
 
     @Autowired
     private QuestionMapper questionMapper;
-    @Autowired
-    private UserMapper userMapper;
 
     @GetMapping("/publish")
     public String publish() {
@@ -36,27 +32,6 @@ public class PublishController {
                             @RequestParam(value = "tag", required = false) String tag,
                             HttpServletRequest request,
                             Model model) {
-
-        //cookie check and user session check
-        User user = null;
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null && cookies.length != 0) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("token")) {
-                    String token = cookie.getValue();
-                    user = userMapper.findByToken(token);
-                    if (user != null) {
-                        request.getSession().setAttribute("user", user);
-                    }
-                    break;
-                }
-            }
-        }
-        if (user == null) {
-            model.addAttribute("error", "user not log in");
-            return "publish";
-        }
-
         //content check
         model.addAttribute("title", title);
         model.addAttribute("description", description);
@@ -73,6 +48,14 @@ public class PublishController {
             model.addAttribute("error", "tag cant be empty");
             return "publish";
         }
+
+        //cookie check and user session check
+        User user = (User) request.getSession().getAttribute("user");
+        if (user == null) {
+            model.addAttribute("error", "user not log in");
+            return "publish";
+        }
+
 
         Question question = new Question();
         question.setTitle(title);
